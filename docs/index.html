@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ActDiff-VC — Active Sampling for Ultra-Low-Bit-Rate Video Compression</title>
+    <meta name="description" content="ActDiff-VC: diffusion-based video compression with content-adaptive keyframes and sparse trajectory conditioning for ultra-low bitrates.">
+    <meta property="og:title" content="ActDiff-VC — Ultra-Low-Bit-Rate Video Compression">
+    <meta property="og:description" content="Conditional diffusion video compression with active sampling of keyframes and sparse point trajectories.">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+    <style type="text/css">
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 300;
+    font-size: 17px;
+    margin-left: auto;
+    margin-right: auto;
+}
+@media screen and (min-width: 980px) {
+    body { width: 980px; }
+}
+h1 {
+    font-weight: 500;
+    line-height: 1.15em;
+    text-align: center;
+    font-size: 40px;
+}
+h2 {
+    font-size: 1.75em;
+    font-weight: 400;
+    margin: 16px 0 4px;
+    text-align: left;
+}
+h3 {
+    font-weight: 600;
+    margin: 16px 0 4px;
+    text-align: left;
+}
+a:link, a:visited {
+    color: #5364cc;
+    text-decoration: none;
+}
+a:hover {
+    color: #208799;
+}
+li { margin: 10px 0; }
+.paper-title {
+    padding: 1px 0;
+    font-family: Arial, sans-serif;
+}
+section {
+    margin: 32px 0;
+    text-align: justify;
+    clear: both;
+}
+.author-row-new { text-align: center; }
+.author-row-new a {
+    display: inline-block;
+    font-size: 20px;
+    padding: 4px;
+}
+.affiliations {
+    font-size: 18px;
+    text-align: center;
+}
+.affil-row { margin-top: 18px; }
+.text-center { text-align: center; }
+.venue { font-size: 23px; }
+hr {
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 0;
+}
+.material-icons { vertical-align: -6px; }
+p { line-height: 1.25em; }
+.method-steps {
+    list-style-position: outside;
+    padding-left: 1.25em;
+}
+.method-steps > li > strong.method-bullet-title { font-weight: 700; }
+.paper-btn {
+    position: relative;
+    text-align: center;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    margin: 8px;
+    padding: 8px;
+    border-width: 0;
+    outline: none;
+    border-radius: 2px;
+    background-color: #5364cc;
+    color: white !important;
+    font-size: 20px;
+    width: 100px;
+    font-weight: 600;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.paper-btn-parent {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.paper-btn:hover { opacity: 0.85; }
+.paper-btn-wide {
+    width: auto;
+    min-width: 120px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.paper-btn-muted {
+    background-color: #8b93c4;
+    cursor: default;
+}
+.paper-btn-muted:hover { opacity: 1; }
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+pre {
+    font-size: 0.9em;
+    padding: 7px;
+    border-radius: 3px;
+    background-color: rgb(235, 235, 235);
+    overflow-x: auto;
+}
+.teaser-placeholder {
+    background: #f5f5f8;
+    border: 1px dashed #c8c8d4;
+    border-radius: 4px;
+    padding: 24px 20px;
+    text-align: center;
+    color: #555;
+    font-size: 16px;
+    line-height: 1.4;
+}
+.site-note {
+    margin-top: 24px;
+    font-size: 0.9em;
+    color: #555;
+    text-align: center;
+}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="paper-title">
+        <h1>Active Sampling for Ultra-Low-Bit-Rate Video Compression via Conditional Controlled Diffusion</h1>
+    </div>
+
+    <div id="authors" style="font-family: Arial, sans-serif;">
+        <div class="author-row-new">
+            <a href="https://importamir.github.io">Amirhosein Javadi</a>,
+            <a href="https://www.seas.upenn.edu/~saeedi/">Shirin Saeedi Bidokhti</a>,
+            <a href="https://tjavidi.eng.ucsd.edu">Tara Javidi</a>
+        </div>
+        <div class="affiliations" style="margin-top: 12px;">
+            <span>University of California San Diego</span>
+            &nbsp;·&nbsp;
+            <span>University of Pennsylvania</span>
+        </div>
+        <div class="affil-row">
+            <div class="venue text-center"><b>ActDiff-VC</b> — diffusion-based video compression (manuscript)</div>
+        </div>
+
+        <div style="clear: both">
+            <div class="paper-btn-parent">
+                <a class="paper-btn paper-btn-muted paper-btn-wide" href="#paper" title="PDF link will be added when available">
+                    <span class="material-icons" style="margin-right: 6px;">description</span>
+                    Paper
+                </a>
+                <a class="paper-btn" href="https://github.com/importAmir/ActDiff-VC">
+                    <span class="material-icons" style="margin-right: 6px;">code</span>
+                    Code
+                </a>
+                <a class="paper-btn paper-btn-wide" href="#citation">
+                    <span class="material-icons" style="margin-right: 6px;">format_quote</span>
+                    BibTeX
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <section id="teaser">
+        <hr>
+        <h2>Overview</h2>
+        <p>
+            <strong>ActDiff-VC</strong> targets perceptual video reconstruction at ultra-low bitrates using a conditional diffusion decoder.
+            The encoder performs <em>active sampling</em>: variable-length segments, keyframes sent only when needed, and temporal dynamics summarized by a compact set of tracked point trajectories.
+            A budget-aware selector keeps the trajectory representation sparse while preserving motion fidelity for the decoder.
+        </p>
+        <div class="teaser-placeholder" role="note">
+            Add a pipeline figure or demo video here by placing assets under <code>docs/images/</code> and updating this section.
+        </div>
+    </section>
+
+    <section id="abstract">
+        <hr>
+        <h2>Abstract</h2>
+        <p>
+            Diffusion models provide a powerful generative prior for perceptual reconstruction at ultra-low bitrates, but effective video compression requires controlling the generative process using highly compact conditioning signals.
+            In this work, we present <strong>ActDiff-VC</strong>, a diffusion-based video compression framework for the ultra-low-bitrate regime.
+            Our method partitions videos into variable-length segments, transmits keyframes only when needed, and summarizes temporal dynamics using a compact set of tracked point trajectories.
+            Conditioned on these sparse signals, a conditional diffusion decoder synthesizes the remaining frames, enabling perceptually realistic reconstruction under severe rate constraints.
+            To support this design, we introduce two mechanisms: content-adaptive keyframe selection and budget-aware sparse trajectory selection, which together enable compact yet effective conditioning for generative reconstruction.
+            Experiments on the UVG and MCL-JCV benchmarks show that ActDiff-VC achieves up to 64.6% bitrate reduction at matched NIQE, improves KID by up to 64.6% and FID by up to 37.7% at comparable bitrates against strong learned codecs, and delivers favorable perceptual rate–distortion trade-offs relative to learned and diffusion-based baselines in the ultra-low-bitrate regime.
+        </p>
+    </section>
+
+    <section id="method">
+        <hr>
+        <h2>Method</h2>
+        <p>
+            ActDiff-VC couples <em>content-adaptive</em> temporal segmentation at the encoder with a <em>conditional diffusion</em> decoder.
+            For each segment, a dense point tracker estimates motion trajectories; a sparse subset of points is chosen under a bitrate budget so that the full field can be reconstructed accurately via locally correlated interpolation.
+            Keyframes anchor appearance; the sparse trajectory set encodes motion for the diffusion model, which generates frames between keyframe boundaries.
+        </p>
+        <ul class="method-steps">
+            <li><strong class="method-bullet-title">Segmentation &amp; keyframes.</strong> Variable-length GOPs with overlap; keyframes are selected when appearance and motion from the current anchor stop being predictive.</li>
+            <li><strong class="method-bullet-title">Dense tracking &amp; sparse trajectories.</strong> A dense tracking field is subsampled to a budget-limited set of trajectories, using importance weights from the reference frame to prioritize informative regions.</li>
+            <li><strong class="method-bullet-title">Conditional diffusion decoding.</strong> The decoder conditions on boundary keyframes and the sparse trajectory set to synthesize intermediate frames while maintaining temporal coherence across segments.</li>
+        </ul>
+    </section>
+
+    <section id="results">
+        <hr>
+        <h2>Experiments</h2>
+        <p>
+            Results are reported on <strong>UVG</strong> and <strong>MCL-JCV</strong> under ultra-low-bitrate settings, comparing against strong learned and diffusion-based codecs on perceptual metrics (e.g., NIQE, FID, KID) and rate–distortion behavior.
+            See the manuscript for full tables, ablations, and implementation details.
+        </p>
+    </section>
+
+    <section id="conclusion">
+        <hr>
+        <h2>Conclusion</h2>
+        <p>
+            ActDiff-VC combines a pretrained conditional diffusion decoder with active sampling of keyframes and sparse trajectory conditioning, enabling strong perceptual quality at extreme compression rates.
+            Ablation studies in the paper highlight the role of content-adaptive keyframe placement and budget-aware trajectory selection.
+        </p>
+    </section>
+
+    <section id="paper">
+        <hr>
+        <h2>Paper</h2>
+        <p>
+            The PDF (e.g., arXiv or journal version) will be linked from the <strong>Paper</strong> button above once it is public.
+            Replace the button <code>href</code> in <code>docs/index.html</code> with your PDF or arXiv URL.
+        </p>
+    </section>
+
+    <section class="maintext" id="citation">
+        <hr>
+        <h2>Cite this work</h2>
+        <p>
+            A. Javadi, S. Saeedi Bidokhti, and T. Javidi,
+            <b>Active Sampling for Ultra-Low-Bit-Rate Video Compression via Conditional Controlled Diffusion</b>
+            (manuscript).
+        </p>
+<pre><code>@misc{javadi2026actdiffvc,
+    title={Active Sampling for Ultra-Low-Bit-Rate Video Compression via Conditional Controlled Diffusion},
+    author={Javadi, Amirhosein and Saeedi Bidokhti, Shirin and Javidi, Tara},
+    year={2026},
+    note={Manuscript; project page: https://github.com/importAmir/ActDiff-VC},
+}</code></pre>
+    </section>
+
+    <p class="site-note">
+        Page template adapted from prior project sites (e.g. NVLabs <a href="https://nv-tlabs.github.io/LION/">LION</a>-style layouts).
+    </p>
+</div>
+</body>
+</html>
