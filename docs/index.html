@@ -64,11 +64,13 @@ section {
     text-align: center;
 }
 .text-center { text-align: center; }
-.pipeline-figure {
+.pipeline-figure,
+.exp-figure {
     margin: 24px 0;
     text-align: center;
 }
-.pipeline-figure img {
+.pipeline-figure img,
+.exp-figure img {
     max-width: 100%;
     height: auto;
     display: block;
@@ -80,6 +82,11 @@ section {
     color: #565656;
     margin-top: 10px;
     text-align: center;
+}
+.exp-subhead {
+    font-size: 1.15em;
+    font-weight: 600;
+    margin: 28px 0 10px;
 }
 .conclusion-list {
     padding-left: 1.25em;
@@ -220,16 +227,79 @@ pre {
 
     <figure class="pipeline-figure">
         <img src="figs/pipeline-small-page1.png" alt="ActDiff-VC pipeline: dense tracking, sparse trajectory selection, and conditional diffusion decoding." width="1744" height="660" loading="lazy" decoding="async">
-        <figcaption class="figure-caption"><b>Figure 1.</b> Framework overview (see paper).</figcaption>
+        <figcaption class="figure-caption"><b>Figure 1.</b> Framework overview.</figcaption>
     </figure>
 
     <section id="results">
         <hr>
         <h2>Experiments</h2>
         <p>
-            Results are reported on <strong>UVG</strong> and <strong>MCL-JCV</strong> under ultra-low-bitrate settings, comparing against strong learned and diffusion-based codecs on perceptual metrics (e.g., NIQE, FID, KID) and rate–distortion behavior.
-            See the manuscript for full tables, ablations, and implementation details.
+            We evaluate on <strong>UVG</strong> and <strong>MCL-JCV</strong> at 480×720 (except the diffusion baseline <strong>EVC-PDM</strong>, evaluated at 128×128 per its released code).
+            We report <strong>LPIPS</strong>, <strong>FID</strong>, <strong>KID</strong>, and <strong>NIQE</strong> (lower is better for all), which better reflect perceptual realism in the ultra-low-bitrate regime than pixel-wise distortion.
+            Baselines include learned codecs <strong>DCVC</strong>, <strong>DCVC-TCM</strong>, <strong>DCVC-HEM</strong>, <strong>DCVC-DC</strong>, <strong>DCVC-FM</strong>, GAN-based <strong>PLVC</strong>, and diffusion-based <strong>EVC-PDM</strong>, using official implementations and pretrained weights where available.
         </p>
+
+        <h3 class="exp-subhead">Quantitative comparison</h3>
+        <p>
+            Figure 2 plots each metric versus bits per pixel (BPP).
+            <strong>ActDiff-VC</strong> is strongest in <strong>NIQE</strong> and <strong>KID</strong> at very low rates: e.g., NIQE 5.08 at 0.0164 BPP on UVG and 5.10 at 0.0276 BPP on MCL-JCV, while DCVC-FM needs about 0.0372 and 0.0780 BPP respectively for similar NIQE—corresponding to <strong>55.9%</strong> and <strong>64.6%</strong> bitrate reductions.
+            For <strong>KID</strong> at similar low BPP, improvements over DCVC-FM are up to <strong>64.6%</strong> (UVG) and <strong>58.0%</strong> (MCL-JCV).
+            <strong>FID</strong> also improves in the ultra-low-rate regime (e.g., <strong>37.7%</strong> vs. DCVC-FM on UVG at comparable bitrate; <strong>22.8%</strong> on MCL-JCV).
+            <strong>LPIPS</strong> remains competitive with older DCVC variants though not below DCVC-FM; versus <strong>EVC-PDM</strong> at roughly 0.032–0.036 BPP, ActDiff-VC improves LPIPS by about 49%, FID by about 80%, KID by about 91%, and NIQE by about 49% on average across the two datasets.
+        </p>
+        <figure class="exp-figure">
+            <img src="figs/exp-metrics-vs-bpp.png" alt="LPIPS, FID, KID, and NIQE vs BPP on UVG and MCL-JCV." width="2493" height="794" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Figure 2.</b> Quantitative comparison on UVG and MCL-JCV: LPIPS, FID, KID, and NIQE vs. BPP (rasterized from <code>metrics_vs_bpp.pdf</code> page 1).</figcaption>
+        </figure>
+
+        <h3 class="exp-subhead">Qualitative comparison</h3>
+        <p>
+            Figure 3 shows side-by-side reconstructions at comparable (sometimes higher) bitrates for competing methods.
+            Numbers under each panel report per-video BPP, LPIPS, and FID.
+            Red boxes in these figures highlight difficult regions (fine texture, boundaries); ActDiff-VC tends to preserve structure with fewer blur and breakup artifacts than baselines at similar rates.
+        </p>
+        <figure class="exp-figure">
+            <img src="figs/exp-qualitative-uvg.png" alt="Qualitative comparison on a UVG sequence." width="1369" height="264" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Figure 3 (left).</b> Representative UVG sequence (rasterized from <code>visulization.pdf</code> page 1).</figcaption>
+        </figure>
+        <figure class="exp-figure">
+            <img src="figs/exp-qualitative-mcl.png" alt="Qualitative comparison on an MCL-JCV sequence." width="1369" height="264" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Figure 3 (right).</b> Representative MCL-JCV sequence (rasterized from <code>visulization.pdf</code> page 5).</figcaption>
+        </figure>
+
+        <h3 class="exp-subhead">Content-adaptive keyframe selection</h3>
+        <p>
+            Figure 4 uses <strong>videoSRC20</strong> from MCL-JCV, where a scene cut occurs between frames 42 and 43.
+            <strong>ActDiff-VC</strong> detects the cut and inserts a new keyframe, so the first frame after the cut is reconstructed faithfully.
+            <strong>PLVC</strong> uses a fixed keyframe interval and cannot react to the abrupt change, so the reconstruction after the cut still looks like the previous scene with visible distortion.
+            <strong>EVC-PDM</strong> can adapt using diffusion-based forecasting at the encoder, but still achieves lower visual quality than ActDiff-VC in this example.
+        </p>
+        <figure class="exp-figure">
+            <img src="figs/exp-keyframe-selection.png" alt="Keyframe selection comparison: ActDiff-VC, PLVC, EVC-PDM around a scene cut." width="1368" height="492" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Figure 4.</b> Content-adaptive keyframe selection around a scene cut (rasterized from <code>visulization_keyframe_selection.pdf</code> page 1).</figcaption>
+        </figure>
+
+        <h3 class="exp-subhead">Ablation: components</h3>
+        <p>
+            At <strong>fixed bitrate</strong> on UVG, we ablate (i) keyframe policy, (ii) trajectory selection, and (iii) bidirectional conditioning, reporting ΔLPIPS and ΔFID vs. the full model (Adaptive GOP + sketch-weighted content-aware points + bidirectional conditioning; Δ &gt; 0 means worse). Values match the ablation table in the arXiv PDF.
+        </p>
+        <ul class="method-steps">
+            <li><strong class="method-bullet-title">Bidirectional conditioning.</strong> Turning it off hurts quality (e.g., larger ΔFID under adaptive GOP). Under fixed GOP with uniform sampling, adding bidirectional conditioning reduces ΔFID from about +59.4 to about +38.0 and ΔLPIPS from about +0.18 to about +0.13, showing it stabilizes synthesis.</li>
+            <li><strong class="method-bullet-title">Adaptive vs. fixed GOP.</strong> Adaptive GOP greatly reduces degradation: e.g., uniform grid + bidirectional: ΔFID drops from about +38.0 (fixed) to about +5.6 (adaptive), and ΔLPIPS from about +0.13 to about +0.02.</li>
+            <li><strong class="method-bullet-title">Trajectory selection.</strong> High-magnitude–flow sampling overweights large motion and hurts texture (ΔFID about +12.5 vs. +5.6 for uniform under adaptive GOP). Uniform is balanced but blind to content. <strong>Sketch-weighted</strong> content-aware selection matches the full design; dropping sketch weighting gives small but consistent hits (ΔFID about +1.42, ΔLPIPS about +0.02).</li>
+        </ul>
+
+        <h3 class="exp-subhead">Ablation: Adaptive GOP thresholds</h3>
+        <p>
+            Figure 5 sweeps occupancy threshold θ<sub>occ</sub> and perceptual threshold θ<sub>perc</sub> on high-motion MCL-JCV sequences with scene cuts (same heatmaps as <code>theta_occ_theta_perc_heatmaps_bpp_lpips_fid_bpp_lpips_fid.pdf</code> in the manuscript).
+            Raising either threshold terminates segments sooner (more keyframes), increasing BPP while improving LPIPS and FID.
+            θ<sub>occ</sub> has the stronger, more consistent effect on the rate–quality trade-off; θ<sub>perc</sub> matters more at high values (e.g., 0.85 → 0.90).
+            For ultra-low bitrate (bpp ≤ 0.05), we use θ<sub>perc</sub> = 0.85 and θ<sub>occ</sub> = 0.8 (about 0.0415 bpp with strong perceptual scores in that sweep).
+        </p>
+        <figure class="exp-figure">
+            <img src="figs/exp-adaptive-gop-thresholds.png" alt="Heatmaps of BPP, LPIPS, and FID over theta_occ and theta_perc." width="1257" height="379" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Figure 5.</b> Sensitivity of Adaptive GOP to θ<sub>occ</sub> and θ<sub>perc</sub>: BPP (×100), LPIPS, and FID (lower is better).</figcaption>
+        </figure>
     </section>
 
     <section id="conclusion">
@@ -240,16 +310,6 @@ pre {
             <li>By combining adaptive keyframe selection with sparse tracked point trajectories, ActDiff-VC gives a diffusion decoder enough structure to reconstruct perceptually realistic video without transmitting dense motion fields or detailed residuals.</li>
             <li>The results demonstrate that active sampling can significantly improve perceptual quality and bitrate efficiency, making diffusion-based generative models a promising direction for video compression when bandwidth is extremely limited.</li>
         </ul>
-    </section>
-
-    <section id="paper">
-        <hr>
-        <h2>Paper</h2>
-        <p>
-            PDF: <a href="https://arxiv.org/pdf/2605.02849v1">https://arxiv.org/pdf/2605.02849v1</a>
-            &nbsp;·&nbsp;
-            Abstract page: <a href="https://arxiv.org/abs/2605.02849">https://arxiv.org/abs/2605.02849</a>
-        </p>
     </section>
 
     <section class="maintext" id="citation">
