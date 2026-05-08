@@ -112,11 +112,6 @@ p { line-height: 1.25em; }
     padding-left: 10px;
     padding-right: 10px;
 }
-.paper-btn-muted {
-    background-color: #8b93c4;
-    cursor: default;
-}
-.paper-btn-muted:hover { opacity: 1; }
 .container {
     margin-left: auto;
     margin-right: auto;
@@ -157,12 +152,12 @@ pre {
             <span>University of Pennsylvania</span>
         </div>
         <div class="affil-row">
-            <div class="venue text-center"><b>ActDiff-VC</b> — diffusion-based video compression (manuscript)</div>
+            <div class="venue text-center"><b>ActDiff-VC</b> — diffusion-based video compression (arXiv)</div>
         </div>
 
         <div style="clear: both">
             <div class="paper-btn-parent">
-                <a class="paper-btn paper-btn-muted paper-btn-wide" href="#paper" title="PDF link will be added when available">
+                <a class="paper-btn paper-btn-wide" href="https://arxiv.org/pdf/2605.02849v1" target="_blank" rel="noopener noreferrer">
                     <span class="material-icons" style="margin-right: 6px;">description</span>
                     Paper
                 </a>
@@ -203,12 +198,11 @@ pre {
         <hr>
         <h2>Abstract</h2>
         <p>
-            Diffusion models provide a powerful generative prior for perceptual reconstruction at ultra-low bitrates, but effective video compression requires controlling the generative process using highly compact conditioning signals.
-            In this work, we present <strong>ActDiff-VC</strong>, a diffusion-based video compression framework for the ultra-low-bitrate regime.
-            Our method partitions videos into variable-length segments, transmits keyframes only when needed, and summarizes temporal dynamics using a compact set of tracked point trajectories.
-            Conditioned on these sparse signals, a conditional diffusion decoder synthesizes the remaining frames, enabling perceptually realistic reconstruction under severe rate constraints.
-            To support this design, we introduce two mechanisms: content-adaptive keyframe selection and budget-aware sparse trajectory selection, which together enable compact yet effective conditioning for generative reconstruction.
-            Experiments on the UVG and MCL-JCV benchmarks show that ActDiff-VC achieves up to 64.6% bitrate reduction at matched NIQE, improves KID by up to 64.6% and FID by up to 37.7% at comparable bitrates against strong learned codecs, and delivers favorable perceptual rate–distortion trade-offs relative to learned and diffusion-based baselines in the ultra-low-bitrate regime.
+            This work makes ultra-low-bitrate video compression more realistic by using diffusion models as powerful generative decoders guided by only a few compact signals.
+            Instead of transmitting dense motion or detailed residuals, ActDiff-VC sends keyframes only when needed and summarizes motion with a sparse set of tracked point trajectories.
+            A conditional diffusion decoder then reconstructs the missing frames from the boundary keyframes and these sparse motion cues.
+            The method uses content-adaptive keyframe selection and budget-aware trajectory selection to keep the bitstream small while preserving important scene dynamics.
+            On UVG and MCL-JCV, ActDiff-VC achieves up to 64.6% bitrate reduction at matched NIQE, improves KID by up to 64.6%, and improves FID by up to 37.7%, showing that sparse active conditioning can make diffusion-based video compression effective at extreme compression rates.
         </p>
     </section>
 
@@ -240,8 +234,13 @@ pre {
         <hr>
         <h2>Conclusion</h2>
         <p>
-            ActDiff-VC combines a pretrained conditional diffusion decoder with active sampling of keyframes and sparse trajectory conditioning, enabling strong perceptual quality at extreme compression rates.
-            Ablation studies in the paper highlight the role of content-adaptive keyframe placement and budget-aware trajectory selection.
+            This work shows that compact but informative motion conditioning is the key to better video compression in the ultra-low-bitrate regime.
+        </p>
+        <p>
+            By combining adaptive keyframe selection with sparse tracked point trajectories, ActDiff-VC gives a diffusion decoder enough structure to reconstruct perceptually realistic video without transmitting dense motion fields or detailed residuals.
+        </p>
+        <p>
+            The results demonstrate that active sampling can significantly improve perceptual quality and bitrate efficiency, making diffusion-based generative models a promising direction for video compression when bandwidth is extremely limited.
         </p>
     </section>
 
@@ -249,8 +248,9 @@ pre {
         <hr>
         <h2>Paper</h2>
         <p>
-            The PDF (e.g., arXiv or journal version) will be linked from the <strong>Paper</strong> button above once it is public.
-            Replace the button <code>href</code> in <code>docs/index.html</code> with your PDF or arXiv URL.
+            PDF: <a href="https://arxiv.org/pdf/2605.02849v1">https://arxiv.org/pdf/2605.02849v1</a>
+            &nbsp;·&nbsp;
+            Abstract page: <a href="https://arxiv.org/abs/2605.02849">https://arxiv.org/abs/2605.02849</a>
         </p>
     </section>
 
@@ -259,14 +259,17 @@ pre {
         <h2>Cite this work</h2>
         <p>
             A. Javadi, S. Saeedi Bidokhti, and T. Javidi,
-            <b>Active Sampling for Ultra-Low-Bit-Rate Video Compression via Conditional Controlled Diffusion</b>
-            (manuscript).
+            <b>Active Sampling for Ultra-Low-Bit-Rate Video Compression via Conditional Controlled Diffusion</b>,
+            arXiv:2605.02849, 2026.
         </p>
 <pre><code>@misc{javadi2026actdiffvc,
     title={Active Sampling for Ultra-Low-Bit-Rate Video Compression via Conditional Controlled Diffusion},
     author={Javadi, Amirhosein and Saeedi Bidokhti, Shirin and Javidi, Tara},
     year={2026},
-    note={Manuscript; project page: https://github.com/importAmir/ActDiff-VC},
+    eprint={2605.02849},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV},
+    url={https://arxiv.org/abs/2605.02849},
 }</code></pre>
     </section>
 
