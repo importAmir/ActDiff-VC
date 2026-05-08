@@ -63,9 +63,31 @@ section {
     font-size: 18px;
     text-align: center;
 }
-.affil-row { margin-top: 18px; }
 .text-center { text-align: center; }
-.venue { font-size: 23px; }
+.pipeline-figure {
+    margin: 24px 0;
+    text-align: center;
+}
+.pipeline-figure img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border: 0;
+}
+.figure-caption {
+    font-size: 14px;
+    color: #565656;
+    margin-top: 10px;
+    text-align: center;
+}
+.conclusion-list {
+    padding-left: 1.25em;
+    margin: 0;
+}
+.conclusion-list li {
+    margin: 12px 0;
+}
 hr {
     height: 1px;
     border: 0;
@@ -151,10 +173,6 @@ pre {
             &nbsp;·&nbsp;
             <span>University of Pennsylvania</span>
         </div>
-        <div class="affil-row">
-            <div class="venue text-center"><b>ActDiff-VC</b> — diffusion-based video compression (arXiv)</div>
-        </div>
-
         <div style="clear: both">
             <div class="paper-btn-parent">
                 <a class="paper-btn paper-btn-wide" href="https://arxiv.org/pdf/2605.02849v1" target="_blank" rel="noopener noreferrer">
@@ -172,27 +190,6 @@ pre {
             </div>
         </div>
     </div>
-
-    <section id="teaser">
-        <hr>
-        <h2>Overview</h2>
-        <p>
-            <strong>ActDiff-VC</strong> targets perceptual video reconstruction at ultra-low bitrates using a conditional diffusion decoder.
-            The encoder performs <em>active sampling</em>: variable-length segments, keyframes sent only when needed, and temporal dynamics summarized by a compact set of tracked point trajectories.
-            A budget-aware selector keeps the trajectory representation sparse while preserving motion fidelity for the decoder.
-        </p>
-        <figure style="margin: 16px 0;">
-            <object data="figs/pipeline-small.pdf" type="application/pdf" width="100%" height="520" aria-label="ActDiff-VC pipeline figure">
-                <p class="text-center">
-                    PDF figure not displayed in this browser.
-                    <a href="figs/pipeline-small.pdf">Open pipeline figure (PDF)</a>.
-                </p>
-            </object>
-        </figure>
-        <p class="text-center" style="font-size: 14px; color: #565656; margin-top: 8px;">
-            <b>Figure.</b> Framework overview: dense tracking, sparse trajectory selection, and conditional diffusion decoding (see paper).
-        </p>
-    </section>
 
     <section id="abstract">
         <hr>
@@ -221,6 +218,11 @@ pre {
         </ul>
     </section>
 
+    <figure class="pipeline-figure">
+        <img src="figs/pipeline-small-page1.png" alt="ActDiff-VC pipeline: dense tracking, sparse trajectory selection, and conditional diffusion decoding." width="1744" height="660" loading="lazy" decoding="async">
+        <figcaption class="figure-caption"><b>Figure 1.</b> Framework overview (see paper).</figcaption>
+    </figure>
+
     <section id="results">
         <hr>
         <h2>Experiments</h2>
@@ -233,15 +235,11 @@ pre {
     <section id="conclusion">
         <hr>
         <h2>Conclusion</h2>
-        <p>
-            This work shows that compact but informative motion conditioning is the key to better video compression in the ultra-low-bitrate regime.
-        </p>
-        <p>
-            By combining adaptive keyframe selection with sparse tracked point trajectories, ActDiff-VC gives a diffusion decoder enough structure to reconstruct perceptually realistic video without transmitting dense motion fields or detailed residuals.
-        </p>
-        <p>
-            The results demonstrate that active sampling can significantly improve perceptual quality and bitrate efficiency, making diffusion-based generative models a promising direction for video compression when bandwidth is extremely limited.
-        </p>
+        <ul class="conclusion-list">
+            <li>This work shows that compact but informative motion conditioning is the key to better video compression in the ultra-low-bitrate regime.</li>
+            <li>By combining adaptive keyframe selection with sparse tracked point trajectories, ActDiff-VC gives a diffusion decoder enough structure to reconstruct perceptually realistic video without transmitting dense motion fields or detailed residuals.</li>
+            <li>The results demonstrate that active sampling can significantly improve perceptual quality and bitrate efficiency, making diffusion-based generative models a promising direction for video compression when bandwidth is extremely limited.</li>
+        </ul>
     </section>
 
     <section id="paper">
