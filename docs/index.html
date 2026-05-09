@@ -160,6 +160,23 @@ pre {
     color: #555;
     text-align: center;
 }
+.ref-sup a {
+    font-size: 0.72em;
+    font-weight: 600;
+    text-decoration: none;
+    color: #5364cc;
+    margin-left: 1px;
+}
+.ref-sup a:hover { color: #208799; }
+.ref-list {
+    text-align: left;
+    padding-left: 1.35em;
+    margin: 0 0 8px;
+}
+.ref-list li {
+    margin: 10px 0;
+    line-height: 1.35em;
+}
     </style>
 </head>
 <body>
@@ -190,6 +207,10 @@ pre {
                     <span class="material-icons" style="margin-right: 6px;">code</span>
                     Code
                 </a>
+                <a class="paper-btn paper-btn-wide" href="#references">
+                    <span class="material-icons" style="margin-right: 6px;">library_books</span>
+                    Refs
+                </a>
                 <a class="paper-btn paper-btn-wide" href="#citation">
                     <span class="material-icons" style="margin-right: 6px;">format_quote</span>
                     BibTeX
@@ -206,7 +227,7 @@ pre {
             Instead of transmitting dense motion or detailed residuals, ActDiff-VC sends keyframes only when needed and summarizes motion with a sparse set of tracked point trajectories.
             A conditional diffusion decoder then reconstructs the missing frames from the boundary keyframes and these sparse motion cues.
             The method uses content-adaptive keyframe selection and budget-aware trajectory selection to keep the bitstream small while preserving important scene dynamics.
-            On UVG and MCL-JCV, ActDiff-VC achieves up to 64.6% bitrate reduction at matched NIQE, improves KID by up to 64.6%, and improves FID by up to 37.7%, showing that sparse active conditioning can make diffusion-based video compression effective at extreme compression rates.
+            On UVG<sup class="ref-sup"><a href="#ref-1">1</a></sup> and MCL-JCV<sup class="ref-sup"><a href="#ref-2">2</a></sup>, ActDiff-VC achieves up to 64.6% bitrate reduction at matched NIQE, improves KID by up to 64.6%, and improves FID by up to 37.7%, showing that sparse active conditioning can make diffusion-based video compression effective at extreme compression rates.
         </p>
     </section>
 
@@ -234,18 +255,18 @@ pre {
         <hr>
         <h2>Experiments</h2>
         <p>
-            We evaluate on <strong>UVG</strong> and <strong>MCL-JCV</strong> at 480×720 (except the diffusion baseline <strong>EVC-PDM</strong>, evaluated at 128×128 per its released code).
-            We report <strong>LPIPS</strong>, <strong>FID</strong>, <strong>KID</strong>, and <strong>NIQE</strong> (lower is better for all), which better reflect perceptual realism in the ultra-low-bitrate regime than pixel-wise distortion.
-            Baselines include learned codecs <strong>DCVC</strong>, <strong>DCVC-TCM</strong>, <strong>DCVC-HEM</strong>, <strong>DCVC-DC</strong>, <strong>DCVC-FM</strong>, GAN-based <strong>PLVC</strong>, and diffusion-based <strong>EVC-PDM</strong>, using official implementations and pretrained weights where available.
+            We evaluate on <strong>UVG</strong><sup class="ref-sup"><a href="#ref-1">1</a></sup> and <strong>MCL-JCV</strong><sup class="ref-sup"><a href="#ref-2">2</a></sup> at 480×720 (except the diffusion baseline <strong>EVC-PDM</strong><sup class="ref-sup"><a href="#ref-3">3</a></sup>, evaluated at 128×128 per its released code).
+            We report <strong>LPIPS</strong><sup class="ref-sup"><a href="#ref-10">10</a></sup>, <strong>FID</strong><sup class="ref-sup"><a href="#ref-11">11</a></sup>, <strong>KID</strong><sup class="ref-sup"><a href="#ref-12">12</a></sup>, and <strong>NIQE</strong><sup class="ref-sup"><a href="#ref-13">13</a></sup> (lower is better for all), which better reflect perceptual realism in the ultra-low-bitrate regime than pixel-wise distortion.
+            Baselines include learned codecs <strong>DCVC</strong><sup class="ref-sup"><a href="#ref-4">4</a></sup>, <strong>DCVC-TCM</strong><sup class="ref-sup"><a href="#ref-5">5</a></sup>, <strong>DCVC-HEM</strong><sup class="ref-sup"><a href="#ref-6">6</a></sup>, <strong>DCVC-DC</strong><sup class="ref-sup"><a href="#ref-7">7</a></sup>, <strong>DCVC-FM</strong><sup class="ref-sup"><a href="#ref-8">8</a></sup>, GAN-based <strong>PLVC</strong><sup class="ref-sup"><a href="#ref-9">9</a></sup>, and diffusion-based <strong>EVC-PDM</strong><sup class="ref-sup"><a href="#ref-3">3</a></sup>, using official implementations and pretrained weights where available.
         </p>
 
         <h3 class="exp-subhead">Quantitative comparison</h3>
         <p>
             Figure 2 plots each metric versus bits per pixel (BPP).
-            <strong>ActDiff-VC</strong> is strongest in <strong>NIQE</strong> and <strong>KID</strong> at very low rates: e.g., NIQE 5.08 at 0.0164 BPP on UVG and 5.10 at 0.0276 BPP on MCL-JCV, while DCVC-FM needs about 0.0372 and 0.0780 BPP respectively for similar NIQE—corresponding to <strong>55.9%</strong> and <strong>64.6%</strong> bitrate reductions.
-            For <strong>KID</strong> at similar low BPP, improvements over DCVC-FM are up to <strong>64.6%</strong> (UVG) and <strong>58.0%</strong> (MCL-JCV).
-            <strong>FID</strong> also improves in the ultra-low-rate regime (e.g., <strong>37.7%</strong> vs. DCVC-FM on UVG at comparable bitrate; <strong>22.8%</strong> on MCL-JCV).
-            <strong>LPIPS</strong> remains competitive with older DCVC variants though not below DCVC-FM; versus <strong>EVC-PDM</strong> at roughly 0.032–0.036 BPP, ActDiff-VC improves LPIPS by about 49%, FID by about 80%, KID by about 91%, and NIQE by about 49% on average across the two datasets.
+            <strong>ActDiff-VC</strong> is strongest in <strong>NIQE</strong> and <strong>KID</strong> at very low rates: e.g., NIQE 5.08 at 0.0164 BPP on UVG and 5.10 at 0.0276 BPP on MCL-JCV, while DCVC-FM<sup class="ref-sup"><a href="#ref-8">8</a></sup> needs about 0.0372 and 0.0780 BPP respectively for similar NIQE—corresponding to <strong>55.9%</strong> and <strong>64.6%</strong> bitrate reductions.
+            For <strong>KID</strong> at similar low BPP, improvements over DCVC-FM<sup class="ref-sup"><a href="#ref-8">8</a></sup> are up to <strong>64.6%</strong> (UVG) and <strong>58.0%</strong> (MCL-JCV).
+            <strong>FID</strong> also improves in the ultra-low-rate regime (e.g., <strong>37.7%</strong> vs. DCVC-FM<sup class="ref-sup"><a href="#ref-8">8</a></sup> on UVG at comparable bitrate; <strong>22.8%</strong> on MCL-JCV).
+            <strong>LPIPS</strong> remains competitive with older DCVC variants though not below DCVC-FM<sup class="ref-sup"><a href="#ref-8">8</a></sup>; versus <strong>EVC-PDM</strong><sup class="ref-sup"><a href="#ref-3">3</a></sup> at roughly 0.032–0.036 BPP, ActDiff-VC improves LPIPS by about 49%, FID by about 80%, KID by about 91%, and NIQE by about 49% on average across the two datasets.
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-metrics-vs-bpp.png" alt="LPIPS, FID, KID, and NIQE vs BPP on UVG and MCL-JCV." width="2493" height="794" loading="lazy" decoding="async">
@@ -269,10 +290,10 @@ pre {
 
         <h3 class="exp-subhead">Content-adaptive keyframe selection</h3>
         <p>
-            Figure 4 uses <strong>videoSRC20</strong> from MCL-JCV, where a scene cut occurs between frames 42 and 43.
+            Figure 4 uses <strong>videoSRC20</strong> from MCL-JCV<sup class="ref-sup"><a href="#ref-2">2</a></sup>, where a scene cut occurs between frames 42 and 43.
             <strong>ActDiff-VC</strong> detects the cut and inserts a new keyframe, so the first frame after the cut is reconstructed faithfully.
-            <strong>PLVC</strong> uses a fixed keyframe interval and cannot react to the abrupt change, so the reconstruction after the cut still looks like the previous scene with visible distortion.
-            <strong>EVC-PDM</strong> can adapt using diffusion-based forecasting at the encoder, but still achieves lower visual quality than ActDiff-VC in this example.
+            <strong>PLVC</strong><sup class="ref-sup"><a href="#ref-9">9</a></sup> uses a fixed keyframe interval and cannot react to the abrupt change, so the reconstruction after the cut still looks like the previous scene with visible distortion.
+            <strong>EVC-PDM</strong><sup class="ref-sup"><a href="#ref-3">3</a></sup> can adapt using diffusion-based forecasting at the encoder, but still achieves lower visual quality than ActDiff-VC in this example.
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-keyframe-selection.png" alt="Keyframe selection comparison: ActDiff-VC, PLVC, EVC-PDM around a scene cut." width="1368" height="492" loading="lazy" decoding="async">
@@ -311,6 +332,26 @@ pre {
             <li>By combining adaptive keyframe selection with sparse tracked point trajectories, ActDiff-VC gives a diffusion decoder enough structure to reconstruct perceptually realistic video without transmitting dense motion fields or detailed residuals.</li>
             <li>The results demonstrate that active sampling can significantly improve perceptual quality and bitrate efficiency, making diffusion-based generative models a promising direction for video compression when bandwidth is extremely limited.</li>
         </ul>
+    </section>
+
+    <section class="maintext" id="references">
+        <hr>
+        <h2>References</h2>
+        <ol class="ref-list">
+            <li id="ref-1">A. Mercat, M. Viitanen, and J. Vanne, &ldquo;UVG dataset: 50/120fps 4K sequences for video codec analysis and development,&rdquo; in <em>Proc. ACM Multimedia Systems (MMSys)</em>, 2020, pp. 297&ndash;302.</li>
+            <li id="ref-2">H. Wang <em>et al.</em>, &ldquo;MCL-JCV: a JND-based H.264/AVC video quality assessment dataset,&rdquo; in <em>IEEE Int. Conf. Image Processing (ICIP)</em>, 2016, pp. 1509&ndash;1513.</li>
+            <li id="ref-3">B. Li <em>et al.</em>, &ldquo;Extreme Video Compression with Prediction Using Pre-trained Diffusion Models,&rdquo; in <em>IEEE Int. Conf. Wireless Communications and Signal Processing (WCSP)</em>, 2024, pp. 1449&ndash;1455.</li>
+            <li id="ref-4">J. Li, B. Li, and Y. Lu, &ldquo;Deep contextual video compression,&rdquo; in <em>Advances in Neural Information Processing Systems (NeurIPS)</em>, vol. 34, 2021, pp. 18114&ndash;18125.</li>
+            <li id="ref-5">X. Sheng <em>et al.</em>, &ldquo;Temporal context mining for learned video compression,&rdquo; <em>IEEE Trans. Multimedia</em>, vol. 25, pp. 7311&ndash;7322, 2022.</li>
+            <li id="ref-6">J. Li, B. Li, and Y. Lu, &ldquo;Hybrid spatial-temporal entropy modelling for neural video compression,&rdquo; in <em>Proc. ACM Int. Conf. Multimedia</em>, 2022, pp. 1503&ndash;1511.</li>
+            <li id="ref-7">J. Li, B. Li, and Y. Lu, &ldquo;Neural video compression with diverse contexts,&rdquo; in <em>IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)</em>, 2023, pp. 22616&ndash;22626.</li>
+            <li id="ref-8">J. Li, B. Li, and Y. Lu, &ldquo;Neural video compression with feature modulation,&rdquo; in <em>IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)</em>, 2024, pp. 26099&ndash;26108.</li>
+            <li id="ref-9">R. Yang, R. Timofte, and L. Van Gool, &ldquo;Perceptual Learned Video Compression with Recurrent Conditional GAN,&rdquo; in <em>Int. Joint Conf. Artificial Intelligence (IJCAI)</em>, 2022, pp. 1537&ndash;1544.</li>
+            <li id="ref-10">R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang, &ldquo;The unreasonable effectiveness of deep features as a perceptual metric,&rdquo; in <em>IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)</em>, 2018, pp. 586&ndash;595.</li>
+            <li id="ref-11">M. Heusel <em>et al.</em>, &ldquo;GANs trained by a two time-scale update rule converge to a local Nash equilibrium,&rdquo; in <em>Advances in Neural Information Processing Systems (NeurIPS)</em>, vol. 30, 2017.</li>
+            <li id="ref-12">M. Bińkowski, D. J. Sutherland, M. Arbel, and A. Gretton, &ldquo;Demystifying MMD GANs,&rdquo; arXiv:1801.01401, 2018.</li>
+            <li id="ref-13">A. Mittal, R. Soundararajan, and A. C. Bovik, &ldquo;Making a &lsquo;completely blind&rsquo; image quality analyzer,&rdquo; <em>IEEE Signal Processing Letters</em>, vol. 20, no. 3, pp. 209&ndash;212, 2012.</li>
+        </ol>
     </section>
 
     <section class="maintext" id="citation">
