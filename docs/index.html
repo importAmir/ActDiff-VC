@@ -256,7 +256,7 @@ pre {
         <p>
             ActDiff-VC uses content-adaptive keyframe selection to determine segment boundaries based on the usefulness of the current keyframe.
             Starting from the first frame of a segment, the encoder estimates dense point trajectories and forward-splats the keyframe into future frames.
-            It then evaluates two signals: an <strong>occupancy</strong> score, which measures how much of the target frame is covered by the warped keyframe, and a <strong>perceptual similarity</strong> score<sup class="ref-sup"><a href="#ref-8">8</a></sup>, which measures how well the warped content matches the actual future frame.
+            It then evaluates two signals: an <strong>occupancy</strong> score, which measures how much of the target frame is covered by the warped keyframe, and a <strong>perceptual similarity</strong> score, which measures how well the warped content matches the actual future frame.
         </p>
         <p>
             When these scores fall below predefined thresholds for several consecutive frames, the current keyframe is considered no longer sufficient, and a new keyframe is inserted.
@@ -399,7 +399,6 @@ pre {
             <li id="ref-5">R. Yang, R. Timofte, and L. Van Gool, &ldquo;Perceptual Learned Video Compression with Recurrent Conditional GAN,&rdquo; in <em>Int. Joint Conf. Artificial Intelligence (IJCAI)</em>, 2022, pp. 1537&ndash;1544.</li>
             <li id="ref-6">A. W. Harley <em>et al.</em>, &ldquo;AllTracker: Efficient Dense Point Tracking at High Resolution,&rdquo; arXiv:2506.07310, 2025.</li>
             <li id="ref-7">S. Xie and Z. Tu, &ldquo;Holistically-nested edge detection,&rdquo; in <em>IEEE Int. Conf. Computer Vision (ICCV)</em>, 2015, pp. 1395&ndash;1403.</li>
-            <li id="ref-8">R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang, &ldquo;The unreasonable effectiveness of deep features as a perceptual metric,&rdquo; in <em>IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)</em>, 2018, pp. 586&ndash;595.</li>
         </ol>
     </section>
 
