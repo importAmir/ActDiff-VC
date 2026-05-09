@@ -249,7 +249,7 @@ pre {
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-metrics-vs-bpp.png" alt="LPIPS, FID, KID, and NIQE vs BPP on UVG and MCL-JCV." width="2493" height="794" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 2.</b> Quantitative comparison on UVG and MCL-JCV: LPIPS, FID, KID, and NIQE vs. BPP (rasterized from <code>metrics_vs_bpp.pdf</code> page 1).</figcaption>
+            <figcaption class="figure-caption"><b>Figure 2.</b> Quantitative comparison on UVG and MCL-JCV: LPIPS, FID, KID, and NIQE vs. BPP (lower is better).</figcaption>
         </figure>
 
         <h3 class="exp-subhead">Qualitative comparison</h3>
@@ -260,11 +260,11 @@ pre {
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-qualitative-uvg.png" alt="Qualitative comparison on a UVG sequence." width="1369" height="264" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 3 (left).</b> Representative UVG sequence (rasterized from <code>visulization.pdf</code> page 1).</figcaption>
+            <figcaption class="figure-caption"><b>Figure 3 (left).</b> Representative UVG sequence.</figcaption>
         </figure>
         <figure class="exp-figure">
             <img src="figs/exp-qualitative-mcl.png" alt="Qualitative comparison on an MCL-JCV sequence." width="1369" height="264" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 3 (right).</b> Representative MCL-JCV sequence (rasterized from <code>visulization.pdf</code> page 5).</figcaption>
+            <figcaption class="figure-caption"><b>Figure 3 (right).</b> Representative MCL-JCV sequence.</figcaption>
         </figure>
 
         <h3 class="exp-subhead">Content-adaptive keyframe selection</h3>
@@ -276,13 +276,17 @@ pre {
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-keyframe-selection.png" alt="Keyframe selection comparison: ActDiff-VC, PLVC, EVC-PDM around a scene cut." width="1368" height="492" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 4.</b> Content-adaptive keyframe selection around a scene cut (rasterized from <code>visulization_keyframe_selection.pdf</code> page 1).</figcaption>
+            <figcaption class="figure-caption"><b>Figure 4.</b> Content-adaptive keyframe selection around a scene cut.</figcaption>
         </figure>
 
         <h3 class="exp-subhead">Ablation: components</h3>
         <p>
-            At <strong>fixed bitrate</strong> on UVG, we ablate (i) keyframe policy, (ii) trajectory selection, and (iii) bidirectional conditioning, reporting ΔLPIPS and ΔFID vs. the full model (Adaptive GOP + sketch-weighted content-aware points + bidirectional conditioning; Δ &gt; 0 means worse). Values match the ablation table in the arXiv PDF.
+            At <strong>fixed bitrate</strong> on UVG we ablate keyframe policy, trajectory point selection, and bidirectional conditioning. ΔLPIPS and ΔFID are vs. the full model (Adaptive GOP + sketch-weighted content-aware trajectories + bidirectional conditioning); <strong>Δ &gt; 0</strong> means worse.
         </p>
+        <figure class="exp-figure">
+            <img src="figs/Table1_abilation.png" alt="Component ablation table: delta LPIPS and delta FID on UVG at fixed bitrate." width="2094" height="744" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Table 1.</b> Component ablations (UVG, fixed bitrate).</figcaption>
+        </figure>
         <ul class="method-steps">
             <li><strong class="method-bullet-title">Bidirectional conditioning.</strong> Turning it off hurts quality (e.g., larger ΔFID under adaptive GOP). Under fixed GOP with uniform sampling, adding bidirectional conditioning reduces ΔFID from about +59.4 to about +38.0 and ΔLPIPS from about +0.18 to about +0.13, showing it stabilizes synthesis.</li>
             <li><strong class="method-bullet-title">Adaptive vs. fixed GOP.</strong> Adaptive GOP greatly reduces degradation: e.g., uniform grid + bidirectional: ΔFID drops from about +38.0 (fixed) to about +5.6 (adaptive), and ΔLPIPS from about +0.13 to about +0.02.</li>
@@ -291,10 +295,7 @@ pre {
 
         <h3 class="exp-subhead">Ablation: Adaptive GOP thresholds</h3>
         <p>
-            Figure 5 sweeps occupancy threshold θ<sub>occ</sub> and perceptual threshold θ<sub>perc</sub> on high-motion MCL-JCV sequences with scene cuts (same heatmaps as <code>theta_occ_theta_perc_heatmaps_bpp_lpips_fid_bpp_lpips_fid.pdf</code> in the manuscript).
-            Raising either threshold terminates segments sooner (more keyframes), increasing BPP while improving LPIPS and FID.
-            θ<sub>occ</sub> has the stronger, more consistent effect on the rate–quality trade-off; θ<sub>perc</sub> matters more at high values (e.g., 0.85 → 0.90).
-            For ultra-low bitrate (bpp ≤ 0.05), we use θ<sub>perc</sub> = 0.85 and θ<sub>occ</sub> = 0.8 (about 0.0415 bpp with strong perceptual scores in that sweep).
+            θ<sub>occ</sub> and θ<sub>perc</sub> control how early a GOP ends. Increasing either yields shorter GOPs, higher bpp, and better LPIPS/FID; θ<sub>occ</sub> dominates the trade-off. We use θ<sub>perc</sub> = 0.85 and θ<sub>occ</sub> = 0.8 for bpp ≤ 0.05 (~0.0415 bpp).
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-adaptive-gop-thresholds.png" alt="Heatmaps of BPP, LPIPS, and FID over theta_occ and theta_perc." width="1257" height="379" loading="lazy" decoding="async">
