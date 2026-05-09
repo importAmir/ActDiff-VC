@@ -238,7 +238,7 @@ pre {
         <p>
             ActDiff-VC is a generative codec: the encoder performs <strong>active sampling</strong>—it chooses when to spend bits on new keyframes and which motion cues to transmit—while the decoder runs a <strong>conditional diffusion</strong> process to fill in everything in between.
             Each clip is a variable-length GOP with a one-frame overlap to the next, so the receiver can stitch segments without a hard fixed interval.
-            The bitstream carries compressed boundary frames, a losslessly coded sparse trajectory set, and segment length; no dense flow field or residual grid is sent.
+            The bitstream carries compressed boundary frames, a losslessly coded sparse trajectory set, and segment length.
         </p>
 
         <figure class="pipeline-figure">
@@ -251,8 +251,9 @@ pre {
             Instead of a fixed GOP, we ask how long the <em>current</em> keyframe remains useful.
             Using the dense motion field from that frame, we forward-warp the keyframe to each future time and compare to the true frame.
             An <strong>occupancy</strong> score measures how much of the target frame is actually covered by the warp; a <strong>perceptual match</strong> score uses masked LPIPS<sup class="ref-sup"><a href="#ref-9">9</a></sup> on the covered region so similarity is judged only where the warp has support.
-            When coverage or similarity stays high, we keep extending the segment; when both drop and stay low for several consecutive frames (hysteresis), we end the GOP and start a new anchor.
-            The result is longer segments in easy static shots and shorter ones around motion, occlusion, or scene changes—keyframes appear only when needed.
+            We summarize both checks with a single validity score—the <strong>minimum</strong> of occupancy and perceptual similarity, each divided by its threshold—so a frame is &ldquo;still good&rdquo; only if <em>both</em> coverage and perceptual match meet their bars.
+            While that score stays at or above 1, we extend the segment; we end the GOP at the start of the earliest run of <em>L</em> consecutive frames where the score stays <strong>below 1</strong>, i.e. <strong>either</strong> occupancy falls short of its threshold <strong>or</strong> perceptual similarity does (the same criterion as in the paper). The integer <em>L</em> adds hysteresis so a single noisy dip does not force a new keyframe.
+            The result is longer segments in static shots and shorter ones around motion, occlusion, or scene changes—keyframes appear only when needed.
         </p>
         <figure class="exp-figure">
             <img src="figs/method-adaptive-gop.png" alt="Occupancy and perceptual similarity along time for adaptive keyframe selection." width="1529" height="804" loading="lazy" decoding="async">
