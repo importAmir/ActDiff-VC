@@ -77,6 +77,12 @@ section {
     margin: 0 auto;
     border: 0;
 }
+/* Method Figures 2–3: display at 1/1.25 ≈ 80% width (1.25× smaller than full column) */
+.exp-figure.method-figure-scale {
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
 .figure-caption {
     font-size: 14px;
     color: #565656;
@@ -255,7 +261,7 @@ pre {
             While that score stays at or above 1, we extend the segment; we end the GOP at the start of the earliest run of <em>L</em> consecutive frames where the score stays <strong>below 1</strong>, i.e. <strong>either</strong> occupancy falls short of its threshold <strong>or</strong> perceptual similarity does (the same criterion as in the paper). The integer <em>L</em> adds hysteresis so a single noisy dip does not force a new keyframe.
             The result is longer segments in static shots and shorter ones around motion, occlusion, or scene changes—keyframes appear only when needed.
         </p>
-        <figure class="exp-figure">
+        <figure class="exp-figure method-figure-scale">
             <img src="figs/method-adaptive-gop.png" alt="Occupancy and perceptual similarity along time for adaptive keyframe selection." width="1529" height="804" loading="lazy" decoding="async">
             <figcaption class="figure-caption"><b>Figure 2.</b> Content-adaptive keyframe selection: occupancy and perceptual similarity along the segment determine when to insert the next keyframe.</figcaption>
         </figure>
@@ -269,7 +275,7 @@ pre {
             To pick informative points, we weight reconstruction error by a <strong>sketch</strong> of the anchor frame from <strong>HED</strong> (holistically nested edge detection)<sup class="ref-sup"><a href="#ref-7">7</a></sup>, emphasizing boundaries and structured regions where motion errors are most visible.
             We initialize from a coarse grid (strongest sketch per cell), tune the kernel bandwidth on that set, then <strong>greedily</strong> add pixels where sketch-weighted residual is largest until the budget is met or residuals vanish.
         </p>
-        <figure class="exp-figure">
+        <figure class="exp-figure method-figure-scale">
             <img src="figs/method-sparse-point-selection.png" alt="Budget-aware sparse trajectory selection with sketch-weighted residuals." width="1680" height="865" loading="lazy" decoding="async">
             <figcaption class="figure-caption"><b>Figure 3.</b> Budget-aware sparse trajectory selection: RBF reconstruction from the current set (red), sketch-weighted residuals, and greedy addition of high-residual points (blue).</figcaption>
         </figure>
