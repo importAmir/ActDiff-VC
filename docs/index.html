@@ -274,12 +274,18 @@ pre {
 
         <h3 class="exp-subhead">Dense tracking and sparse trajectory selection</h3>
         <p>
-            Motion is represented with <strong>dense long-range point tracks</strong> from the segment&rsquo;s first frame, estimated with <strong>AllTracker</strong><sup class="ref-sup"><a href="#ref-6">6</a></sup>—an occlusion-aware tracker that stays stable under large motion, which matters more than chaining short optical-flow steps.
-            Transmitting every pixel trajectory is impossible at ultra-low rate, so we keep a budget <em>B</em> of points and reconstruct the full field from them with a local RBF interpolator: nearby selected points explain neighbors&rsquo; motion because trajectories are spatially smooth in natural video.
+            After selecting the keyframes, ActDiff-VC must describe the motion inside each segment using as few bits as possible.
+            Transmitting dense motion fields would be too expensive in the ultra-low-bitrate regime, so the method instead represents temporal dynamics with a sparse set of tracked point trajectories.
         </p>
         <p>
-            To pick informative points, we weight reconstruction error by a <strong>sketch</strong> of the anchor frame from <strong>HED</strong> (holistically nested edge detection)<sup class="ref-sup"><a href="#ref-7">7</a></sup>, emphasizing boundaries and structured regions where motion errors are most visible.
-            We initialize from a coarse grid (strongest sketch per cell), tune the kernel bandwidth on that set, then <strong>greedily</strong> add pixels where sketch-weighted residual is largest until the budget is met or residuals vanish.
+            The encoder first estimates dense point tracks from the segment&rsquo;s initial frame across the remaining frames, using <strong>AllTracker</strong><sup class="ref-sup"><a href="#ref-6">6</a></sup> for occlusion-aware, long-range correspondence.
+            It then selects only the most informative trajectories under a fixed bitrate budget.
+            This selection is guided by both motion reconstruction error and image structure (an edge-based sketch from <strong>HED</strong><sup class="ref-sup"><a href="#ref-7">7</a></sup>), so the transmitted points concentrate on regions that are important for perceptual reconstruction, such as object boundaries, edges, and areas with complex motion.
+        </p>
+        <p>
+            At the decoder, these sparse trajectories serve as motion conditioning for the diffusion model.
+            Together with the boundary keyframes, they provide compact guidance about how the scene should evolve over time, allowing the model to synthesize realistic intermediate frames without requiring dense motion information.
+            In this way, sparse trajectory conditioning preserves essential motion structure while keeping the side information small, making diffusion-based video compression practical at extreme compression rates.
         </p>
         <figure class="exp-figure method-figure-scale">
             <img src="figs/method-sparse-point-selection.png" alt="Budget-aware sparse trajectory selection with sketch-weighted residuals." width="1680" height="865" loading="lazy" decoding="async">
