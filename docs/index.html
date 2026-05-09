@@ -242,7 +242,7 @@ pre {
         <hr>
         <h2>Method</h2>
         <p>
-            ActDiff-VC is a generative codec: the encoder performs <strong>active sampling</strong>—it chooses when to spend bits on new keyframes and which motion cues to transmit—while the decoder runs a <strong>conditional diffusion</strong> process to fill in everything in between.
+            ActDiff-VC is a generative codec: the encoder performs <strong>active sampling</strong>—it chooses when to spend bits on new keyframes and which motion cues to transmit—while the decoder runs a <strong>conditional diffusion</strong> process to generate the intermediate frames between keyframes.
             Each clip is a variable-length GOP with a one-frame overlap to the next, so the receiver can stitch segments without a hard fixed interval.
             The bitstream carries compressed boundary frames, a losslessly coded sparse trajectory set, and segment length.
         </p>
@@ -254,12 +254,18 @@ pre {
 
         <h3 class="exp-subhead">Content-adaptive keyframe selection</h3>
         <p>
-            Instead of a fixed GOP, we ask how long the <em>current</em> keyframe remains useful.
-            Using the dense motion field from that frame, we forward-warp the keyframe to each future time and compare to the true frame.
-            An <strong>occupancy</strong> score measures how much of the target frame is actually covered by the warp; a <strong>perceptual match</strong> score uses masked LPIPS<sup class="ref-sup"><a href="#ref-9">9</a></sup> on the covered region so similarity is judged only where the warp has support.
-            We summarize both checks with a single validity score—the <strong>minimum</strong> of occupancy and perceptual similarity, each divided by its threshold—so a frame is &ldquo;still good&rdquo; only if <em>both</em> coverage and perceptual match meet their bars.
-            While that score stays at or above 1, we extend the segment; we end the GOP at the start of the earliest run of <em>L</em> consecutive frames where the score stays <strong>below 1</strong>, i.e. <strong>either</strong> occupancy falls short of its threshold <strong>or</strong> perceptual similarity does (the same criterion as in the paper). The integer <em>L</em> adds hysteresis so a single noisy dip does not force a new keyframe.
-            The result is longer segments in static shots and shorter ones around motion, occlusion, or scene changes—keyframes appear only when needed.
+            A key challenge in ultra-low-bitrate video compression is deciding when to transmit a new keyframe.
+            Fixed keyframe intervals are inefficient because scene dynamics vary over time: static regions may require few keyframes, while rapid motion, occlusion, or scene changes require more frequent references.
+        </p>
+        <p>
+            ActDiff-VC uses content-adaptive keyframe selection to determine segment boundaries based on the usefulness of the current keyframe.
+            Starting from the first frame of a segment, the encoder estimates dense point trajectories and forward-splats the keyframe into future frames.
+            It then evaluates two signals: an <strong>occupancy</strong> score, which measures how much of the target frame is covered by the warped keyframe, and a <strong>perceptual similarity</strong> score<sup class="ref-sup"><a href="#ref-9">9</a></sup>, which measures how well the warped content matches the actual future frame.
+        </p>
+        <p>
+            When these scores fall below predefined thresholds for several consecutive frames, the current keyframe is considered no longer sufficient, and a new keyframe is inserted.
+            This prevents unnecessary keyframes in slowly changing scenes while still responding to complex motion or abrupt content changes.
+            As a result, ActDiff-VC allocates bits according to scene complexity, improving compression efficiency while preserving perceptual realism.
         </p>
         <figure class="exp-figure method-figure-scale">
             <img src="figs/method-adaptive-gop.png" alt="Occupancy and perceptual similarity along time for adaptive keyframe selection." width="1529" height="804" loading="lazy" decoding="async">
@@ -322,7 +328,7 @@ pre {
             <figcaption class="figure-caption"><b>Figure 6.</b> Representative MCL-JCV sequence.</figcaption>
         </figure>
 
-        <h3 class="exp-subhead">Content-adaptive keyframe selection</h3>
+        <h3 class="exp-subhead">Content-Adaptive Keyframe Selection</h3>
         <p>
             Figure 7 uses <strong>videoSRC20</strong> from MCL-JCV<sup class="ref-sup"><a href="#ref-2">2</a></sup>, where a scene cut occurs between frames 42 and 43.
             <strong>ActDiff-VC</strong> detects the cut and inserts a new keyframe, so the first frame after the cut is reconstructed faithfully.
