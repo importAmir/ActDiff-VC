@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ActDiff-VC — Active Sampling for Ultra-Low-Bit-Rate Video Compression</title>
-    <meta name="description" content="ActDiff-VC: diffusion-based video compression with content-adaptive keyframes and sparse trajectory conditioning for ultra-low bitrates.">
+    <meta name="description" content="ActDiff-VC: diffusion-based ultra-low-bitrate video compression with adaptive keyframes and sparse tracked trajectories.">
     <meta property="og:title" content="ActDiff-VC — Ultra-Low-Bit-Rate Video Compression">
-    <meta property="og:description" content="Conditional diffusion video compression with active sampling of keyframes and sparse point trajectories.">
+    <meta property="og:description" content="Sparse active conditioning for perceptual video compression: adaptive keyframes, budget-aware trajectories, conditional diffusion.">
     <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
     <style type="text/css">
 body {
@@ -223,11 +223,12 @@ pre {
         <hr>
         <h2>Abstract</h2>
         <p>
-            This work makes ultra-low-bitrate video compression more realistic by using diffusion models as powerful generative decoders guided by only a few compact signals.
-            Instead of transmitting dense motion or detailed residuals, ActDiff-VC sends keyframes only when needed and summarizes motion with a sparse set of tracked point trajectories.
-            A conditional diffusion decoder then reconstructs the missing frames from the boundary keyframes and these sparse motion cues.
-            The method uses content-adaptive keyframe selection and budget-aware trajectory selection to keep the bitstream small while preserving important scene dynamics.
-            On UVG<sup class="ref-sup"><a href="#ref-1">1</a></sup> and MCL-JCV<sup class="ref-sup"><a href="#ref-2">2</a></sup>, ActDiff-VC achieves up to 64.6% bitrate reduction at matched NIQE, improves KID by up to 64.6%, and improves FID by up to 37.7%, showing that sparse active conditioning can make diffusion-based video compression effective at extreme compression rates.
+            This work presents ActDiff-VC, a diffusion-based framework for video compression in the ultra-low-bitrate regime.
+            The method addresses the central challenge of controlling a generative video decoder using highly compact side information.
+            Rather than transmitting dense motion fields or detailed residual signals, ActDiff-VC adaptively selects keyframes according to scene dynamics and represents temporal motion using a sparse set of tracked point trajectories.
+            These compact conditioning signals are entropy-coded and provided to a conditional diffusion decoder, which reconstructs intermediate frames while maintaining strong perceptual realism.
+            By combining content-adaptive keyframe placement with budget-aware sparse trajectory selection, the framework achieves efficient compression without sacrificing important motion structure.
+            Experiments on UVG<sup class="ref-sup"><a href="#ref-1">1</a></sup> and MCL-JCV<sup class="ref-sup"><a href="#ref-2">2</a></sup> show that ActDiff-VC achieves up to 64.6% bitrate reduction at matched NIQE, improves KID by up to 64.6%, and improves FID by up to 37.7%, demonstrating the effectiveness of sparse active conditioning for perceptual video compression at extreme bitrates.
         </p>
     </section>
 
@@ -353,11 +354,18 @@ pre {
     <section id="conclusion">
         <hr>
         <h2>Conclusion</h2>
-        <ul class="conclusion-list">
-            <li>This work shows that compact but informative motion conditioning is the key to better video compression in the ultra-low-bitrate regime.</li>
-            <li>By combining adaptive keyframe selection with sparse tracked point trajectories, ActDiff-VC gives a diffusion decoder enough structure to reconstruct perceptually realistic video without transmitting dense motion fields or detailed residuals.</li>
-            <li>The results demonstrate that active sampling can significantly improve perceptual quality and bitrate efficiency, making diffusion-based generative models a promising direction for video compression when bandwidth is extremely limited.</li>
-        </ul>
+        <p>
+            This work demonstrates that effective conditioning is essential for diffusion-based video compression in the ultra-low-bitrate regime.
+            ActDiff-VC shows that a generative decoder can produce perceptually realistic reconstructions when guided by a small but informative set of transmitted signals, including adaptively selected keyframes and sparse point trajectories.
+        </p>
+        <p>
+            The proposed framework reduces reliance on dense motion representations and residual coding by exploiting the generative prior of a conditional diffusion model.
+            Its content-adaptive keyframe selection allows the bitstream to respond to changes in scene dynamics, while its budget-aware trajectory selection preserves important motion information under strict rate constraints.
+        </p>
+        <p>
+            The experimental results indicate that ActDiff-VC provides favorable perceptual rate&ndash;distortion trade-offs compared with learned and diffusion-based video compression baselines.
+            These findings suggest that active sampling and sparse motion conditioning offer a promising direction for practical generative video compression, particularly in settings where bandwidth is severely limited and perceptual quality is more important than exact pixel-level fidelity.
+        </p>
     </section>
 
     <section class="maintext" id="references">
