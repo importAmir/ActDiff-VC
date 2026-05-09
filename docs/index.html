@@ -235,21 +235,52 @@ pre {
         <hr>
         <h2>Method</h2>
         <p>
-            ActDiff-VC couples <em>content-adaptive</em> temporal segmentation at the encoder with a <em>conditional diffusion</em> decoder.
-            For each segment, a dense point tracker estimates motion trajectories; a sparse subset of points is chosen under a bitrate budget so that the full field can be reconstructed accurately via locally correlated interpolation.
-            Keyframes anchor appearance; the sparse trajectory set encodes motion for the diffusion model, which generates frames between keyframe boundaries.
+            ActDiff-VC is a generative codec: the encoder performs <strong>active sampling</strong>—it chooses when to spend bits on new keyframes and which motion cues to transmit—while the decoder runs a <strong>conditional diffusion</strong> process to fill in everything in between.
+            Each clip is a variable-length GOP with a one-frame overlap to the next, so the receiver can stitch segments without a hard fixed interval.
+            The bitstream carries compressed boundary frames, a losslessly coded sparse trajectory set, and segment length; no dense flow field or residual grid is sent.
         </p>
-        <ul class="method-steps">
-            <li><strong class="method-bullet-title">Segmentation &amp; keyframes.</strong> Variable-length GOPs with overlap; keyframes are selected when appearance and motion from the current anchor stop being predictive.</li>
-            <li><strong class="method-bullet-title">Dense tracking &amp; sparse trajectories.</strong> A dense tracking field is subsampled to a budget-limited set of trajectories, using importance weights from the reference frame to prioritize informative regions.</li>
-            <li><strong class="method-bullet-title">Conditional diffusion decoding.</strong> The decoder conditions on boundary keyframes and the sparse trajectory set to synthesize intermediate frames while maintaining temporal coherence across segments.</li>
-        </ul>
-    </section>
 
-    <figure class="pipeline-figure">
-        <img src="figs/pipeline-small-page1.png" alt="ActDiff-VC pipeline: dense tracking, sparse trajectory selection, and conditional diffusion decoding." width="1744" height="660" loading="lazy" decoding="async">
-        <figcaption class="figure-caption"><b>Figure 1.</b> Framework overview.</figcaption>
-    </figure>
+        <figure class="pipeline-figure">
+            <img src="figs/pipeline-small-page1.png" alt="ActDiff-VC pipeline: dense tracking, sparse trajectory selection, and conditional diffusion decoding." width="1744" height="660" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Figure 1.</b> Framework overview: dense tracks from the anchor frame, sketch-guided subsampling to sparse trajectories, and diffusion decoding conditioned on trajectories plus boundary frames.</figcaption>
+        </figure>
+
+        <h3 class="exp-subhead">Content-adaptive keyframe selection</h3>
+        <p>
+            Instead of a fixed GOP, we ask how long the <em>current</em> keyframe remains useful.
+            Using the dense motion field from that frame, we forward-warp the keyframe to each future time and compare to the true frame.
+            An <strong>occupancy</strong> score measures how much of the target frame is actually covered by the warp; a <strong>perceptual match</strong> score uses masked LPIPS<sup class="ref-sup"><a href="#ref-9">9</a></sup> on the covered region so similarity is judged only where the warp has support.
+            When coverage or similarity stays high, we keep extending the segment; when both drop and stay low for several consecutive frames (hysteresis), we end the GOP and start a new anchor.
+            The result is longer segments in easy static shots and shorter ones around motion, occlusion, or scene changes—keyframes appear only when needed.
+        </p>
+        <figure class="exp-figure">
+            <img src="figs/method-adaptive-gop.png" alt="Occupancy and perceptual similarity along time for adaptive keyframe selection." width="1529" height="804" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Figure 2.</b> Content-adaptive keyframe selection: occupancy and perceptual similarity along the segment determine when to insert the next keyframe.</figcaption>
+        </figure>
+
+        <h3 class="exp-subhead">Dense tracking and sparse trajectory selection</h3>
+        <p>
+            Motion is represented with <strong>dense long-range point tracks</strong> from the segment&rsquo;s first frame, estimated with <strong>AllTracker</strong><sup class="ref-sup"><a href="#ref-6">6</a></sup>—an occlusion-aware tracker that stays stable under large motion, which matters more than chaining short optical-flow steps.
+            Transmitting every pixel trajectory is impossible at ultra-low rate, so we keep a budget <em>B</em> of points and reconstruct the full field from them with a local RBF interpolator: nearby selected points explain neighbors&rsquo; motion because trajectories are spatially smooth in natural video.
+        </p>
+        <p>
+            To pick informative points, we weight reconstruction error by a <strong>sketch</strong> of the anchor frame from <strong>HED</strong> (holistically nested edge detection)<sup class="ref-sup"><a href="#ref-7">7</a></sup>, emphasizing boundaries and structured regions where motion errors are most visible.
+            We initialize from a coarse grid (strongest sketch per cell), tune the kernel bandwidth on that set, then <strong>greedily</strong> add pixels where sketch-weighted residual is largest until the budget is met or residuals vanish.
+        </p>
+        <figure class="exp-figure">
+            <img src="figs/method-sparse-point-selection.png" alt="Budget-aware sparse trajectory selection with sketch-weighted residuals." width="1680" height="865" loading="lazy" decoding="async">
+            <figcaption class="figure-caption"><b>Figure 3.</b> Budget-aware sparse trajectory selection: RBF reconstruction from the current set (red), sketch-weighted residuals, and greedy addition of high-residual points (blue).</figcaption>
+        </figure>
+
+        <h3 class="exp-subhead">Diffusion decoder: DaS and dual conditioning</h3>
+        <p>
+            The decoder is built on <strong>DaS</strong> (Diffusion as Shader)<sup class="ref-sup"><a href="#ref-8">8</a></sup>, a transformer video diffusion model in VAE latent space.
+            Sparse trajectories are turned into a motion-conditioning latent; the first anchor frame (and, in our setup, the last boundary frame) provide appearance anchors.
+            At inference we use <strong>dual conditioning</strong>: both boundary latents are placed at the first and last temporal slices with zeros in between, replacing the original single-frame padding so the synthesis is pulled toward <em>both</em> ends of the GOP.
+            That costs essentially no extra rate (one overlapping frame per segment boundary) but reduces boundary flicker.
+            Variable segment lengths are handled by temporally resampling trajectories to DaS&rsquo;s fixed grid and subsampling the output back to the segment length.
+        </p>
+    </section>
 
     <section id="results">
         <hr>
@@ -257,7 +288,7 @@ pre {
 
         <h3 class="exp-subhead">Quantitative comparison</h3>
         <p>
-            Figure 2 plots each metric versus bits per pixel (BPP).
+            Figure 4 plots each metric versus bits per pixel (BPP).
             <strong>ActDiff-VC</strong> is strongest in <strong>NIQE</strong> and <strong>KID</strong> at very low rates: e.g., NIQE 5.08 at 0.0164 BPP on UVG and 5.10 at 0.0276 BPP on MCL-JCV, while DCVC-FM<sup class="ref-sup"><a href="#ref-4">4</a></sup> needs about 0.0372 and 0.0780 BPP respectively for similar NIQE—corresponding to <strong>55.9%</strong> and <strong>64.6%</strong> bitrate reductions.
             For <strong>KID</strong> at similar low BPP, improvements over DCVC-FM<sup class="ref-sup"><a href="#ref-4">4</a></sup> are up to <strong>64.6%</strong> (UVG) and <strong>58.0%</strong> (MCL-JCV).
             <strong>FID</strong> also improves in the ultra-low-rate regime (e.g., <strong>37.7%</strong> vs. DCVC-FM<sup class="ref-sup"><a href="#ref-4">4</a></sup> on UVG at comparable bitrate; <strong>22.8%</strong> on MCL-JCV).
@@ -265,34 +296,34 @@ pre {
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-metrics-vs-bpp.png" alt="LPIPS, FID, KID, and NIQE vs BPP on UVG and MCL-JCV." width="2493" height="794" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 2.</b> Quantitative comparison on UVG and MCL-JCV: LPIPS, FID, KID, and NIQE vs. BPP (lower is better).</figcaption>
+            <figcaption class="figure-caption"><b>Figure 4.</b> Quantitative comparison on UVG and MCL-JCV: LPIPS, FID, KID, and NIQE vs. BPP (lower is better).</figcaption>
         </figure>
 
         <h3 class="exp-subhead">Qualitative comparison</h3>
         <p>
-            Figure 3 shows side-by-side reconstructions at comparable (sometimes higher) bitrates for competing methods.
+            Figures 5 and 6 show side-by-side reconstructions at comparable (sometimes higher) bitrates for competing methods.
             Numbers under each panel report per-video BPP, LPIPS, and FID.
             Red boxes in these figures highlight difficult regions (fine texture, boundaries); ActDiff-VC tends to preserve structure with fewer blur and breakup artifacts than baselines at similar rates.
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-qualitative-uvg.png" alt="Qualitative comparison on a UVG sequence." width="1369" height="264" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 3.</b> Representative UVG sequence.</figcaption>
+            <figcaption class="figure-caption"><b>Figure 5.</b> Representative UVG sequence.</figcaption>
         </figure>
         <figure class="exp-figure">
             <img src="figs/exp-qualitative-mcl.png" alt="Qualitative comparison on an MCL-JCV sequence." width="1369" height="264" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 3.</b> Representative MCL-JCV sequence.</figcaption>
+            <figcaption class="figure-caption"><b>Figure 6.</b> Representative MCL-JCV sequence.</figcaption>
         </figure>
 
         <h3 class="exp-subhead">Content-adaptive keyframe selection</h3>
         <p>
-            Figure 4 uses <strong>videoSRC20</strong> from MCL-JCV<sup class="ref-sup"><a href="#ref-2">2</a></sup>, where a scene cut occurs between frames 42 and 43.
+            Figure 7 uses <strong>videoSRC20</strong> from MCL-JCV<sup class="ref-sup"><a href="#ref-2">2</a></sup>, where a scene cut occurs between frames 42 and 43.
             <strong>ActDiff-VC</strong> detects the cut and inserts a new keyframe, so the first frame after the cut is reconstructed faithfully.
             <strong>PLVC</strong><sup class="ref-sup"><a href="#ref-5">5</a></sup> uses a fixed keyframe interval and cannot react to the abrupt change, so the reconstruction after the cut still looks like the previous scene with visible distortion.
             <strong>EVC-PDM</strong><sup class="ref-sup"><a href="#ref-3">3</a></sup> can adapt using diffusion-based forecasting at the encoder, but still achieves lower visual quality than ActDiff-VC in this example.
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-keyframe-selection.png" alt="Keyframe selection comparison: ActDiff-VC, PLVC, EVC-PDM around a scene cut." width="1368" height="492" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 4.</b> Content-adaptive keyframe selection around a scene cut.</figcaption>
+            <figcaption class="figure-caption"><b>Figure 7.</b> Content-adaptive keyframe selection around a scene cut.</figcaption>
         </figure>
 
         <h3 class="exp-subhead">Ablation: components</h3>
@@ -315,7 +346,7 @@ pre {
         </p>
         <figure class="exp-figure">
             <img src="figs/exp-adaptive-gop-thresholds.png" alt="Heatmaps of BPP, LPIPS, and FID over theta_occ and theta_perc." width="1257" height="379" loading="lazy" decoding="async">
-            <figcaption class="figure-caption"><b>Figure 5.</b> Sensitivity of Adaptive GOP to θ<sub>occ</sub> and θ<sub>perc</sub>: BPP (×100), LPIPS, and FID (lower is better).</figcaption>
+            <figcaption class="figure-caption"><b>Figure 8.</b> Sensitivity of Adaptive GOP to θ<sub>occ</sub> and θ<sub>perc</sub>: BPP (×100), LPIPS, and FID (lower is better).</figcaption>
         </figure>
     </section>
 
@@ -338,6 +369,10 @@ pre {
             <li id="ref-3">B. Li <em>et al.</em>, &ldquo;Extreme Video Compression with Prediction Using Pre-trained Diffusion Models,&rdquo; in <em>IEEE Int. Conf. Wireless Communications and Signal Processing (WCSP)</em>, 2024, pp. 1449&ndash;1455.</li>
             <li id="ref-4">J. Li, B. Li, and Y. Lu, &ldquo;Neural video compression with feature modulation,&rdquo; in <em>IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)</em>, 2024, pp. 26099&ndash;26108.</li>
             <li id="ref-5">R. Yang, R. Timofte, and L. Van Gool, &ldquo;Perceptual Learned Video Compression with Recurrent Conditional GAN,&rdquo; in <em>Int. Joint Conf. Artificial Intelligence (IJCAI)</em>, 2022, pp. 1537&ndash;1544.</li>
+            <li id="ref-6">A. W. Harley <em>et al.</em>, &ldquo;AllTracker: Efficient Dense Point Tracking at High Resolution,&rdquo; arXiv:2506.07310, 2025.</li>
+            <li id="ref-7">S. Xie and Z. Tu, &ldquo;Holistically-nested edge detection,&rdquo; in <em>IEEE Int. Conf. Computer Vision (ICCV)</em>, 2015, pp. 1395&ndash;1403.</li>
+            <li id="ref-8">Z. Gu <em>et al.</em>, &ldquo;Diffusion as Shader: 3D-aware video diffusion for versatile video generation control,&rdquo; in <em>ACM SIGGRAPH Conf. Papers</em>, 2025, pp. 1&ndash;12.</li>
+            <li id="ref-9">R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang, &ldquo;The unreasonable effectiveness of deep features as a perceptual metric,&rdquo; in <em>IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)</em>, 2018, pp. 586&ndash;595.</li>
         </ol>
     </section>
 
