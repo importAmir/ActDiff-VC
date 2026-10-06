@@ -84,18 +84,18 @@ wget -O checkpoints/hed/network-bsds500.pth \
 
 download-mlic-checkpoint = """
 mkdir -p checkpoints/mlic && \
-gdown --id 1FWPezuHLTQhDmEhShViI3XOSXA5u_Bya \
+gdown 1FWPezuHLTQhDmEhShViI3XOSXA5u_Bya \
   -O checkpoints/mlic/mlicpp_mse_q5_2960000.pth.tar
 """
 
 # HiFiC keyframe codec weights (--image_compressor hific-low/med/high)
 download-hific-checkpoints = """
 mkdir -p checkpoints/hific && \
-gdown --fuzzy "https://drive.google.com/file/d/1hfFTkZbs_VOBmXQ-M4bYEPejrD76lAY9/view" \
+gdown 1hfFTkZbs_VOBmXQ-M4bYEPejrD76lAY9 \
   -O checkpoints/hific/hific_low.pt && \
-gdown --fuzzy "https://drive.google.com/file/d/1QNoX0AGKTBkthMJGPfQI0dT0_tnysYUb/view" \
+gdown 1QNoX0AGKTBkthMJGPfQI0dT0_tnysYUb \
   -O checkpoints/hific/hific_med.pt && \
-gdown --fuzzy "https://drive.google.com/file/d/1BFYpvhVIA_Ek2QsHBbKnaBE8wn1GhFyA/view" \
+gdown 1BFYpvhVIA_Ek2QsHBbKnaBE8wn1GhFyA \
   -O checkpoints/hific/hific_hi.pt
 """
 
