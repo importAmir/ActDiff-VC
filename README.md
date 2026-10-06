@@ -24,7 +24,7 @@ LPIPS, FID, KID and NIQE against bits per pixel on UVG and MCL-JCV (lower is bet
 
 ## Try it on Google Colab
 
-[notebooks/ActDiff_VC_Colab.ipynb](notebooks/ActDiff_VC_Colab.ipynb) sets everything up and compresses a video you upload. It needs a Colab runtime with at least 40 GB of GPU memory (A100 or H100, available with Colab Pro or pay-as-you-go); the free T4 runtime is too small for the Diffusion-as-Shader decoder.
+[notebooks/ActDiff_VC_Colab.ipynb](notebooks/ActDiff_VC_Colab.ipynb) sets everything up and compresses a video you upload. It needs a Colab runtime with at least 40 GB of GPU memory.
 
 ---
 
