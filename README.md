@@ -6,7 +6,9 @@ This work is published in *Transactions on Machine Learning Research (TMLR)*, 20
 
 [Amirhosein Javadi](https://importamir.github.io), [Shirin Saeedi Bidokhti](https://www.seas.upenn.edu/~saeedi/), [Tara Javidi](https://tjavidi.eng.ucsd.edu)
 
-**[Project website](https://importamir.github.io/ActDiff-VC/) · [Paper](https://arxiv.org/pdf/2605.02849)**
+**[Project website](https://importamir.github.io/ActDiff-VC/) · [Paper](https://openreview.net/pdf?id=zER4e4GfZH)**
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/importAmir/ActDiff-VC/blob/main/notebooks/ActDiff_VC_Colab.ipynb)
 
 ActDiff-VC is an ultra-low-bitrate video compression framework that combines active sampling with conditional diffusion, using content-adaptive keyframe selection and sparse point trajectories to provide compact yet informative conditioning for generative reconstruction. It substantially reduces the bitrate required to achieve improved perceptual quality over strong learned codecs, and produces visually realistic reconstructions under severe rate constraints.
 
@@ -16,7 +18,13 @@ ActDiff-VC is an ultra-low-bitrate video compression framework that combines act
 
 ![Rate-perception comparison on UVG and MCL-JCV](docs/figs/exp-metrics-vs-bpp.png)
 
-LPIPS, FID, KID and NIQE against bits per pixel on UVG and MCL-JCV (lower is better). See the [paper](https://arxiv.org/pdf/2605.02849) and the [project website](https://importamir.github.io/ActDiff-VC/) for qualitative comparisons and ablations.
+LPIPS, FID, KID and NIQE against bits per pixel on UVG and MCL-JCV (lower is better). See the [paper](https://openreview.net/pdf?id=zER4e4GfZH) and the [project website](https://importamir.github.io/ActDiff-VC/) for qualitative comparisons and ablations.
+
+---
+
+## Try it on Google Colab
+
+[notebooks/ActDiff_VC_Colab.ipynb](notebooks/ActDiff_VC_Colab.ipynb) sets everything up and compresses a video you upload. It needs a Colab runtime with at least 40 GB of GPU memory (A100 or H100, available with Colab Pro or pay-as-you-go); the free T4 runtime is too small for the Diffusion-as-Shader decoder.
 
 ---
 
@@ -134,7 +142,7 @@ Run `pixi run compress --help` for all options, including checkpoint paths and r
   journal = {Transactions on Machine Learning Research},
   issn    = {2835-8856},
   year    = {2026},
-  url     = {https://arxiv.org/abs/2605.02849}
+  url     = {https://openreview.net/forum?id=zER4e4GfZH}
 }
 ```
 
