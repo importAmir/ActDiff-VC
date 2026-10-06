@@ -1,0 +1,12 @@
+[submodule "third_party/DiffusionAsShader"]
+	path = third_party/DiffusionAsShader
+	url = https://github.com/Amirhosein-javadi/DiffusionAsShader.git
+[submodule "third_party/MLIC"]
+	path = third_party/MLIC
+	url = https://github.com/Amirhosein-javadi/MLIC.git
+[submodule "third_party/alltracker"]
+	path = third_party/alltracker
+	url = https://github.com/Amirhosein-javadi/alltracker.git
+[submodule "third_party/HiFiC"]
+	path = third_party/HiFiC
+	url = https://github.com/Justin-Tan/high-fidelity-generative-compression.git

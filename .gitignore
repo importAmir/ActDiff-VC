@@ -1,0 +1,19 @@
+# Python / environment
+__pycache__/
+*.py[cod]
+.pixi/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Model weights (see `pixi run download-all-checkpoints`)
+checkpoints/
+
+# Run outputs
+outputs*/
+bitstream*/
+
+# Local-only material: analysis scripts, cluster jobs, results, datasets, slides, paper source
+_local/

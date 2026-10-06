@@ -1,0 +1,125 @@
+[project]
+name = "actdiff-vc"
+version = "1.0.0"
+description = "ActDiff-VC: Active Sampling for Ultra-Low-Bit-Rate Video Compression via Conditional Controlled Diffusion"
+channels = ["conda-forge", "pytorch"]
+platforms = ["linux-64"]
+
+[pypi-dependencies]
+# PyTorch (CUDA 12.1 wheels)
+torch = { version = "==2.5.1", index = "https://download.pytorch.org/whl/cu121" }
+torchvision = { version = "==0.20.1", index = "https://download.pytorch.org/whl/cu121" }
+
+# Diffusion-as-Shader decoder (CogVideoX) and ZoeDepth
+diffusers = ">=0.31.2"
+transformers = ">=4.45.2"
+accelerate = "*"
+sentencepiece = ">=0.2.0"
+huggingface_hub = { version = "==0.25.2", extras = ["cli"] }
+image_gen_aux = { git = "https://github.com/asomoza/image_gen_aux.git" }
+
+# Video I/O and image processing
+numpy = ">=1.26.4"
+pillow = "*"
+opencv-python = "==4.8.0.76"
+moviepy = "==1.0.3"
+imageio-ffmpeg = ">=0.5.1"
+matplotlib = "==3.7.3"
+scipy = "*"
+scikit-image = "==0.21.0"
+
+# Keyframe codecs (HiFiC, MLIC++) and AllTracker
+compressai = "==1.2.*"
+autograd = "==1.9.1"
+pandas = "*"
+einops = "==0.6.1"
+timm = ">=0.9.16,<1.1"
+
+# Metrics
+lpips = "*"
+pytorch-msssim = "*"
+pyiqa = "*"
+torchmetrics = { version = "*", extras = ["image"] }
+
+# Checkpoint downloads
+gdown = "*"
+
+[dependencies]
+python = "3.10.*"
+pip = "*"
+# torch.compile (Triton) needs a C compiler at run time
+c-compiler = "*"
+cxx-compiler = "*"
+sysroot_linux-64 = ">=2.17,<3"
+# Extracting UVG .7z archives
+p7zip = "*"
+
+[tasks]
+# Environment information
+check-python = "python --version"
+check-gpu = "python -c 'import torch; print(f\"CUDA available: {torch.cuda.is_available()}\\nGPU count: {torch.cuda.device_count()}\\nCurrent device: {torch.cuda.get_device_name()}\" if torch.cuda.is_available() else \"No CUDA GPU available\")'"
+check-torch = "python -c 'import torch; print(f\"PyTorch version: {torch.__version__}\\nCUDA version: {torch.version.cuda}\")'"
+
+# Fetch all third-party submodules
+import = "git submodule update --init"
+
+# All weights live under checkpoints/ (gitignored)
+download-das-checkpoint = """
+huggingface-cli download EXCAI/Diffusion-As-Shader \
+  --repo-type model \
+  --local-dir checkpoints/Diffusion-As-Shader
+"""
+
+download-alltracker-checkpoint = """
+huggingface-cli download aharley/alltracker \
+  --repo-type model \
+  --local-dir checkpoints/alltracker
+"""
+
+download-hed-checkpoint = """
+mkdir -p checkpoints/hed && \
+wget -O checkpoints/hed/network-bsds500.pth \
+  https://huggingface.co/lllyasviel/ControlNet/resolve/main/annotator/ckpts/network-bsds500.pth
+"""
+
+download-mlic-checkpoint = """
+mkdir -p checkpoints/mlic && \
+gdown --id 1FWPezuHLTQhDmEhShViI3XOSXA5u_Bya \
+  -O checkpoints/mlic/mlicpp_mse_q5_2960000.pth.tar
+"""
+
+# HiFiC keyframe codec weights (--image_compressor hific-low/med/high)
+download-hific-checkpoints = """
+mkdir -p checkpoints/hific && \
+gdown --fuzzy "https://drive.google.com/file/d/1hfFTkZbs_VOBmXQ-M4bYEPejrD76lAY9/view" \
+  -O checkpoints/hific/hific_low.pt && \
+gdown --fuzzy "https://drive.google.com/file/d/1QNoX0AGKTBkthMJGPfQI0dT0_tnysYUb/view" \
+  -O checkpoints/hific/hific_med.pt && \
+gdown --fuzzy "https://drive.google.com/file/d/1BFYpvhVIA_Ek2QsHBbKnaBE8wn1GhFyA/view" \
+  -O checkpoints/hific/hific_hi.pt
+"""
+
+# Inception-I3D weights for the PVCS metric
+download-i3d-weights = """
+mkdir -p checkpoints/i3d && \
+wget -q --show-progress -O checkpoints/i3d/i3d_pretrained_400.pt \
+  "https://huggingface.co/Xiaodong/FVD_I3D/resolve/main/i3d_pretrained_400.pt"
+"""
+
+download-all-checkpoints = """
+pixi run download-das-checkpoint && \
+pixi run download-alltracker-checkpoint && \
+pixi run download-hed-checkpoint && \
+pixi run download-mlic-checkpoint && \
+pixi run download-hific-checkpoints && \
+pixi run download-i3d-weights
+"""
+
+# One-shot setup: submodules + all weights
+bootstrap = "pixi run import && pixi run download-all-checkpoints"
+
+# Store a Hugging Face token for gated / faster downloads
+login-huggingface = "huggingface-cli login"
+
+# Encode + decode + evaluate one video
+compress = "python run_compression.py"
