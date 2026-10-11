@@ -70,7 +70,8 @@ section {
     text-align: center;
 }
 .pipeline-figure img,
-.exp-figure img {
+.exp-figure img,
+.exp-figure video {
     max-width: 100%;
     height: auto;
     display: block;
@@ -239,6 +240,10 @@ pre {
             By combining content-adaptive keyframe placement with budget-aware sparse trajectory selection, the framework achieves efficient compression without sacrificing important motion structure.
             Experiments on UVG<sup class="ref-sup"><a href="#ref-1">1</a></sup> and MCL-JCV<sup class="ref-sup"><a href="#ref-2">2</a></sup> show that ActDiff-VC achieves up to 64.6% bitrate reduction at matched NIQE, improves KID by up to 64.6%, and improves FID by up to 37.7%, demonstrating the effectiveness of sparse active conditioning for perceptual video compression at extreme bitrates.
         </p>
+        <figure class="exp-figure">
+            <video src="figs/jockey_gt_actdiffvc_dcvcfm.mp4" width="2160" height="536" autoplay loop muted playsinline preload="metadata" aria-label="Jockey from UVG: the original video, ActDiff-VC and DCVC-FM side by side."></video>
+            <figcaption class="figure-caption">Jockey from UVG<sup class="ref-sup"><a href="#ref-1">1</a></sup>: the original video, ActDiff-VC and DCVC-FM. Numbers in parentheses are (bpp, FID); lower FID is better.</figcaption>
+        </figure>
     </section>
 
     <section id="method">
