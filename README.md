@@ -10,6 +10,10 @@ This work is published in *Transactions on Machine Learning Research (TMLR)*, 20
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/importAmir/ActDiff-VC/blob/main/notebooks/ActDiff_VC_Colab.ipynb)
 
+![Jockey (UVG): original vs. ActDiff-VC vs. DCVC-FM](docs/figs/jockey_gt_actdiffvc_dcvcfm.gif)
+
+Jockey from UVG: the original video, ActDiff-VC and DCVC-FM at a similar bitrate. Numbers in parentheses are (bpp, FID); lower FID is better.
+
 ActDiff-VC is an ultra-low-bitrate video compression framework that combines active sampling with conditional diffusion, using content-adaptive keyframe selection and sparse point trajectories to provide compact yet informative conditioning for generative reconstruction. It substantially reduces the bitrate required to achieve improved perceptual quality over strong learned codecs, and produces visually realistic reconstructions under severe rate constraints.
 
 ![ActDiff-VC pipeline](docs/figs/pipeline-small-page1.png)
